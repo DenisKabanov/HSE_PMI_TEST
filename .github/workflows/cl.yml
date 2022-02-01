@@ -13,6 +13,11 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+#создание глобальной переменной
+env:
+  #global_env - имя переменной, а значение = global
+  global_env: global
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -42,9 +47,14 @@ jobs:
           echo test, and deploy your project.
 
   #практика 01.02.2022
+  #создание другой job-ы (докера)
   env:
     #выбор, на чём будет запускаться
     runs-on: ubuntu-latest
+    #создание локальной переменной для job-ы 'env'
+    env:
+      #local_env - имя переменной, а значение = значению в переменной GITHUB_JOB
+      local_env: $GITHUB_JOB
     #выполняемые шаги в этой job-е
     steps:
       #название для подзадачи
