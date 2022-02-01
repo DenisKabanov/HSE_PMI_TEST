@@ -25,11 +25,13 @@ jobs:
     env:
       local_env: building
     steps:
-      #выкачивает ветку с файлами (без этого не запустить run: g++ main.cpp -o app_$ImageOS)
+      #выкачивает ветку с файлами (без этого не запустить g++ main.cpp -o app_$ImageOS)
       - uses: actions/checkout@v2
       - name: build
       #компиляция файла main и создание файла
-        run: g++ main.cpp -o app_$ImageOS
+        run: |
+          g++ main.cpp -o app_${ RUNNER_OS }
+          ls -la
       
   test:
     runs-on: ubuntu-latest
