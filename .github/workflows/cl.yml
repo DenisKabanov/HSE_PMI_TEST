@@ -1,4 +1,4 @@
-name: cl
+name: 01.02.2022
 
 on:
   push:
@@ -28,10 +28,16 @@ jobs:
       #выкачивает ветку с файлами (без этого не запустить g++ main.cpp -o app_$ImageOS)
       - uses: actions/checkout@v2
       - name: build
-      #компиляция файла main и создание файла
+        #компиляция файла main и создание файла
         run: |
           g++ main.cpp -o app_${RUNNER_OS}_ver.${GITHUB_RUN_NUMBER}
           ls -la
+      #создание артефакта(приложения) для linux
+      - name: Upload a build artifact
+      uses: actions/upload-artifact@v2.3.1
+      with:
+        name my_app
+        path app_
       
   test:
     runs-on: ubuntu-latest
@@ -39,4 +45,4 @@ jobs:
     needs: [build]
     steps:
       - name: run_test
-        run: sleep 20
+        run: sleep 5
