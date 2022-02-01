@@ -54,8 +54,8 @@ jobs:
     #создание локальной переменной для job-ы 'env'
     env:
       #local_env - имя переменной, а значение = значению в переменной GITHUB_JOB
-      local_env: ${ GITHUB_JOB }
-      #либо local_env: ${{ github.job }}
+      local_env: ${{ github.job }}
+      #либо local_env: ${{ env.GITHUB_JOB }}
     #выполняемые шаги в этой job-е
     steps:
       #название для подзадачи
@@ -63,3 +63,25 @@ jobs:
         #что будет выполнено при запуске
         run: env
     
+  
+  
+  build-emu:
+    runs-on: ubuntu-latest
+    env:
+      local_env: job_print_env
+    steps:
+      - name: build
+        run: |
+          sleep 15
+          echo "test build" >> build.txt
+      
+  
+  
+  
+  test:
+    runs-on: ubuntu-latest
+    #запуск джобы с тестами после сборки предыдущих шагов
+    needs: [env, build-emu]
+    steps:
+      - name: run_test
+        run: sleep 20
