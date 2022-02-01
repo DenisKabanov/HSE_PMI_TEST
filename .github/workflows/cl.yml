@@ -30,7 +30,7 @@ jobs:
       - name: build
       #компиляция файла main и создание файла
         run: |
-          g++ main.cpp -o app_${ RUNNER_OS }
+          g++ main.cpp -o app_${RUNNER_OS}_ver.${GITHUB_RUN_NUMBER}
           ls -la
       
   test:
