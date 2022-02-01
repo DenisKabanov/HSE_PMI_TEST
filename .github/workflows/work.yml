@@ -2,9 +2,9 @@ name: work
 
 on:
   push:
-    branches: [ main ]
+    branches: [ L2 ]
   pull_request:
-    branches: [ main ]
+    branches: [ L2 ]
   workflow_dispatch:
 
 jobs:
