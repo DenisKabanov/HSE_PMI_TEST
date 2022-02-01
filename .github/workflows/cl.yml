@@ -63,24 +63,19 @@ jobs:
         #что будет выполнено при запуске
         run: env
     
-  
-  
   build-emu:
     runs-on: ubuntu-latest
     env:
       local_env: job_print_env
     steps:
-      - name: build
+      - name: build-emu
         run: |
           sleep 15
           echo "test build" >> build.txt
       
-  
-  
-  
   test:
     runs-on: ubuntu-latest
-    #запуск джобы с тестами после сборки предыдущих шагов
+    #запуск джобы с тестами после сборки предыдущих шагов (простейший pipeline)
     needs: [env, build-emu]
     steps:
       - name: run_test
