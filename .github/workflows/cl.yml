@@ -54,7 +54,7 @@ jobs:
     #создание локальной переменной для job-ы 'env'
     env:
       #local_env - имя переменной, а значение = значению в переменной GITHUB_JOB
-      local_env: ${{ GITHUB_JOB }}
+      local_env: ${ GITHUB_JOB }
       #либо local_env: ${{ github.job }}
     #выполняемые шаги в этой job-е
     steps:
