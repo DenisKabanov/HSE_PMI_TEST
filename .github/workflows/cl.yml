@@ -34,10 +34,10 @@ jobs:
           ls -la
       #создание артефакта(приложения) для linux
       - name: Upload a build artifact
-      uses: actions/upload-artifact@v2.3.1
-      with:
-        name my_app
-        path app_
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: my_app
+          path: app_
       
   test:
     runs-on: ubuntu-latest
