@@ -13,6 +13,7 @@ jobs:
     #runs-on: [ macos-latest, ubuntu-latest ]
     
     #выбор всех систем с помощью следующей стратегии
+    #${{}} двойные скобки для контекстных/гитовских переменных, ${} для просто переменных окружения в докере
     runs-on: ${{ matrix.os }}
     #конструкция для перебирания всех значений матрицы
     strategy:
@@ -41,8 +42,8 @@ jobs:
       - name: build
         #компиляция и выполнение приложения с названием из переменной среды
         run: |
-          g++ main.cpp ${{ matrix.gcc_o }} -o ${{ env.app_name }}
-          ./${{ env.app_name }}
+          g++ main.cpp ${{ matrix.gcc_o }} -o ${ env.app_name }
+          ./${ env.app_name }
           echo ${{ matrix.python_v }}
        #создание артефактов
       - name: Upload a build artifact
@@ -51,7 +52,7 @@ jobs:
           #имя папки для артефактов
           name: my_app
           #добавление артефакта по имени(регулярка)
-          path: ${{ env.app_name }}
+          path: ${ env.app_name }
           # удаление созданных артефактов через 1 день
           retention-days: 1
  
