@@ -44,7 +44,7 @@ jobs:
         run: |
           g++ main.cpp ${{ matrix.gcc_o }} -o ${{ env.app_name }}
           ./${{ env.app_name }}
-          echo ${{ matrix.python_v }}
+          echo python${{ matrix.python_v }}
        #создание артефактов
       - name: Upload a build artifact
         uses: actions/upload-artifact@v2.3.1
