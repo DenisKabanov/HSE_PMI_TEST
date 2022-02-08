@@ -23,13 +23,16 @@ jobs:
         os: [macos-latest, ubuntu-latest]
         #параметры для запуска gcc компилятора (уровни оптимизации
         gcc_o: ["-O0", "-O3"]
+    env:
+      app_name: app-${RUNNER_OS}${{ matrix.gcc_o }}_ver:${GITHUB_RUN_NUMBER}
     steps:
       #выкачивает ветку с файлами (без этого не запустить g++ main.cpp -o app_$ImageOS)
       - uses: actions/checkout@v2
       - name: build
         run: |
-          g++ main.cpp ${{ matrix.gcc_o }} -o app-${RUNNER_OS}${{ matrix.gcc_o }}_ver:${GITHUB_RUN_NUMBER}
-          ./app-${RUNNER_OS}${{ matrix.gcc_o }}_ver:${GITHUB_RUN_NUMBER}
+          #компиляция приложения с названием из переменной среды
+          g++ main.cpp ${{ matrix.gcc_o }} -o ${{ env.app_name }}
+          ./${{ env.app_name }}
        #создание артефактов
       - name: Upload a build artifact
         uses: actions/upload-artifact@v2.3.1
@@ -37,7 +40,7 @@ jobs:
           #имя папки для артефактов
           name: my_app
           #добавление артефакта по имени(регулярка)
-          path: app_**
+          path: app-**
           # удаление созданных артефактов через 1 день
           retention-days: 1
  
