@@ -9,26 +9,19 @@ on:
 
 jobs:
 
-  build_macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: build
-        run: |
-          g++ main.cpp -o app_${RUNNER_OS}_ver.${GITHUB_RUN_NUMBER}
-          ./app_${RUNNER_OS}_ver.${GITHUB_RUN_NUMBER}
-      - name: Upload a build artifact
-        uses: actions/upload-artifact@v2.3.1
-        with:
-          #имя папки для артефактов
-          name: my_app
-          #добавление артефакта по имени(регулярка)
-          path: app_**
-          # удаление созданных артефактов через 1 день
-          retention-days: 1
+  build_macos_and_ubuntu:
+    #несколько вариантов для запуска (выберется тот, где есть ольше мощностей)
+    #runs-on: [ macos-latest, ubuntu-latest ]
     
-  build_ubuntu:
-    runs-on: ubuntu-latest
+    #выбор всех систем с помощью следующей стратегии
+    runs-on: ${{matrix.os}}
+    #конструкция для перебирания всех значений матрицы
+    strategy:
+      #создание матрицы
+      matrix:
+        #создание объекта os в матрице
+        os: [macos-latest, ubuntu-latest]
+    
     steps:
       - uses: actions/checkout@v2
       - name: build
