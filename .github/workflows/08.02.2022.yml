@@ -7,8 +7,7 @@ on:
     branches: [ L3 ]
   workflow_dispatch:
 
-jobs:
-
+jobs: 
   build_macos_and_ubuntu:
     #несколько вариантов для запуска (выберется тот, где есть ольше мощностей)
     #runs-on: [ macos-latest, ubuntu-latest ]
@@ -23,8 +22,9 @@ jobs:
         os: [macos-latest, ubuntu-latest]
         #параметры для запуска gcc компилятора (уровни оптимизации
         gcc_o: ["-O0", "-O3"]
+    #переменная app_name на уровне job-а
     env:
-      app_name: app-${RUNNER_OS}${{ matrix.gcc_o }}_ver:${GITHUB_RUN_NUMBER}
+      app_name: app-${{ matrix.os }}${{ matrix.gcc_o }}_ver:${{ github.run_number }}
     steps:
       #выкачивает ветку с файлами (без этого не запустить g++ main.cpp -o app_$ImageOS)
       - uses: actions/checkout@v2
@@ -40,7 +40,7 @@ jobs:
           #имя папки для артефактов
           name: my_app
           #добавление артефакта по имени(регулярка)
-          path: app-**
+          path: ${{ env.app_name }}
           # удаление созданных артефактов через 1 день
           retention-days: 1
  
