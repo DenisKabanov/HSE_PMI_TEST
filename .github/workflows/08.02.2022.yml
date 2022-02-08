@@ -13,7 +13,7 @@ jobs:
     #runs-on: [ macos-latest, ubuntu-latest ]
     
     #выбор всех систем с помощью следующей стратегии
-    runs-on: ${{matrix.os}}
+    runs-on: ${{ matrix.os }}
     #конструкция для перебирания всех значений матрицы
     strategy:
       #создание матрицы
@@ -22,14 +22,19 @@ jobs:
         os: [macos-latest, ubuntu-latest]
         #параметры для запуска gcc компилятора (уровни оптимизации
         gcc_o: ["-O0", "-O3"]
+        #версия python
+        python_v: [2, 3]
         #параметры для исключения из матрицы (не будет билдиться для macos с максимальной оптимизацией)
         exclude:
           - os: macos-latest
             gcc_o: "-O3"
-          
+        #добавление нестандартного параметра
+        include:
+          - os: macos-latest
+            gcc_o: "-O2"
     #переменная app_name на уровне job-а
     env:
-      app_name: app-${{ matrix.os }}${{ matrix.gcc_o }}_ver:${{ github.run_number }}
+      app_name: app-${{ matrix.os }}${{ matrix.gcc_o }}_ver.${{ github.run_number }}
     steps:
       #выкачивает ветку с файлами (без этого не запустить g++ main.cpp -o app_$ImageOS)
       - uses: actions/checkout@v2
@@ -38,6 +43,7 @@ jobs:
         run: |
           g++ main.cpp ${{ matrix.gcc_o }} -o ${{ env.app_name }}
           ./${{ env.app_name }}
+          echo ${{ matrix.python_v }}
        #создание артефактов
       - name: Upload a build artifact
         uses: actions/upload-artifact@v2.3.1
