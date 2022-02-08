@@ -1,0 +1,64 @@
+name: work 08.02.2022
+
+on:
+  push:
+    branches: [ L3 ]
+  pull_request:
+    branches: [ L3 ]
+  workflow_dispatch:
+
+jobs:
+
+  build_macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: build
+        run: |
+          g++ main.cpp -o app_${RUNNER_OS}_ver.${GITHUB_RUN_NUMBER}
+          ./app_${RUNNER_OS}_ver.${GITHUB_RUN_NUMBER}
+      - name: Upload a build artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          #имя папки для артефактов
+          name: my_app
+          #добавление артефакта по имени(регулярка)
+          path: app_**
+          # удаление созданных артефактов через 1 день
+          retention-days: 1
+    
+  build_ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: build
+        run: |
+          g++ main.cpp -o app_${RUNNER_OS}_ver.${GITHUB_RUN_NUMBER}
+          ./app_${RUNNER_OS}_ver.${GITHUB_RUN_NUMBER}
+      - name: Upload a build artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          #имя папки для артефактов
+          name: my_app
+          #добавление артефакта по имени(регулярка)
+          path: app_**
+          # удаление созданных артефактов через 1 день
+          retention-days: 1
+ 
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      #добавление компилятора для windows
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: build
+        run: cl /EHsc main.cpp
+      - name: Upload a build artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          #имя папки для артефактов
+          name: my_app
+          #добавление артефакта по имени
+          path: main.exe
+          # удаление созданных артефактов через 1 день
+          retention-days: 1
