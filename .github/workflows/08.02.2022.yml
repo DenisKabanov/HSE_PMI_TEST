@@ -19,7 +19,7 @@ jobs:
       #создание матрицы
       matrix:
         #создание объекта os в матрице
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-11, ubuntu-20.04]
         #параметры для запуска gcc компилятора (уровни оптимизации
         gcc_o: ["-O0", "-O3"]
         #версия python
@@ -56,7 +56,7 @@ jobs:
           retention-days: 1
  
   build_windows:
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       #выкачивает ветку с файлами (без этого не запустить g++ main.cpp -o app_$ImageOS)
       - uses: actions/checkout@v2
