@@ -22,6 +22,11 @@ jobs:
         os: [macos-latest, ubuntu-latest]
         #параметры для запуска gcc компилятора (уровни оптимизации
         gcc_o: ["-O0", "-O3"]
+        #параметры для исключения из матрицы (не будет билдиться для macos с максимальной оптимизацией)
+        exclude:
+          - os: macos-latest
+            gcc_o: "-O3"
+          
     #переменная app_name на уровне job-а
     env:
       app_name: app-${{ matrix.os }}${{ matrix.gcc_o }}_ver:${{ github.run_number }}
@@ -29,8 +34,8 @@ jobs:
       #выкачивает ветку с файлами (без этого не запустить g++ main.cpp -o app_$ImageOS)
       - uses: actions/checkout@v2
       - name: build
+        #компиляция и выполнение приложения с названием из переменной среды
         run: |
-          #компиляция приложения с названием из переменной среды
           g++ main.cpp ${{ matrix.gcc_o }} -o ${{ env.app_name }}
           ./${{ env.app_name }}
        #создание артефактов
