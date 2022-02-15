@@ -1,0 +1,72 @@
+name: work 15.02.2022
+
+on:
+  push:
+    branches: [ L4 ]
+  pull_request:
+    branches: [ L4 ]
+  workflow_dispatch:
+
+jobs: 
+  build_macos_and_ubuntu:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-11, ubuntu-20.04]
+        gcc_o: ["-O0", "-O3"]
+        python_v: [2, 3]
+        exclude:
+          - os: macos-11
+            gcc_o: "-O3"
+        include:
+          - os: macos-11
+            gcc_o: "-O2"
+    env:
+      app_name: app-${{ matrix.os }}${{ matrix.gcc_o }}_ver.${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: build
+        run: |
+          g++ main.cpp ${{ matrix.gcc_o }} -o ${{ env.app_name }}
+          ./${{ env.app_name }}
+          echo python${{ matrix.python_v }}
+      - name: Upload a build artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: my_app
+          path: ${{ env.app_name }}
+          retention-days: 1
+ 
+  build_windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: build
+        run: cl /EHsc main.cpp
+      - name: Upload a build artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: my_app
+          path: main.exe
+          retention-days: 1
+  
+  #оповещение в телеграм
+  report:
+    runs-on: ubuntu-20.04
+    needs: [build_macos_and_ubuntu, build_windows]
+    steps:
+      - name: send message
+        uses: appleboy/telegram-action@master
+        with:
+          # id чата в телеграм
+          to: ${{ secrets.TELEGRAM_TO }}
+          #токен пользователя в телеграм
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ${{ github.actor }} created commit:
+            Commit message: ${{ github.event.commits[0].message }}
+            
+            Repository: ${{ github.repository }}
+            
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
