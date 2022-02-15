@@ -13,14 +13,14 @@ jobs:
     strategy:
       matrix:
         os: [macos-11, ubuntu-20.04]
-        gcc_o: ["-O0", "-O3"]
-        python_v: [2, 3]
-        exclude:
-          - os: macos-11
-            gcc_o: "-O3"
-        include:
-          - os: macos-11
-            gcc_o: "-O2"
+        gcc_o: ["-O0"]
+#         python_v: [2, 3]
+#         exclude:
+#           - os: macos-11
+#             gcc_o: "-O3"
+#         include:
+#           - os: macos-11
+#             gcc_o: "-O2"
     env:
       app_name: app-${{ matrix.os }}${{ matrix.gcc_o }}_ver.${{ github.run_number }}
     steps:
@@ -53,10 +53,17 @@ jobs:
   
   #оповещение в телеграм
   report:
+    #во всех job-ах неявно стоит следующий if:
+    #if: success()
+    
+    #теперь поставим выполнение этого job-а, если предыдущие (хотя бы один) шаги упали (из needs)
+    if: failure()
     runs-on: ubuntu-20.04
     needs: [build_macos_and_ubuntu, build_windows]
     steps:
-      - name: send message
+      - name: print secrets
+        run: echo ${{ secrets.TELEGRAM_TO }}
+      - name: send telegram message on push
         uses: appleboy/telegram-action@master
         with:
           # id чата в телеграм
