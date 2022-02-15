@@ -72,9 +72,9 @@ jobs:
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
         with:
-          # id чата в телеграм
+          # id чата в телеграм (указать в secrets github-а)
           to: ${{ secrets.TELEGRAM_TO }}
-          # токен пользователя в телеграм
+          # токен пользователя в телеграм (указать в secrets github-а)
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             # как можно случайно слить github secrets:
@@ -97,7 +97,8 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
-          document: ${{ env.artifact_name }}
+          # выгружаем все бинари, начинающиеся на app-
+          document: app-**
           message: |
             ${{ github.actor }} created commit:
             See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
