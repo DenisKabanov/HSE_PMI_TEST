@@ -7,6 +7,10 @@ on:
     branches: [ L4 ]
   workflow_dispatch:
 
+# глобальная переменная для всех job-ов
+env:
+  artifact_name:  app_ver_${{ github.sha }}
+
 jobs: 
   build_macos_and_ubuntu:
     runs-on: ${{ matrix.os }}
@@ -33,7 +37,7 @@ jobs:
       - name: Upload a build artifact
         uses: actions/upload-artifact@v2.3.1
         with:
-          name: my_app
+          name: ${{ env.artifact_name }}
           path: ${{ env.app_name }}
           retention-days: 1
  
@@ -47,7 +51,7 @@ jobs:
       - name: Upload a build artifact
         uses: actions/upload-artifact@v2.3.1
         with:
-          name: my_app
+          name: ${{ env.artifact_name }}
           path: main.exe
           retention-days: 1
   
@@ -62,18 +66,38 @@ jobs:
     needs: [build_macos_and_ubuntu, build_windows]
     steps:
       - name: print secrets
+        # github secrets скрываются (будут звёздочки)
         run: echo ${{ secrets.TELEGRAM_TO }}
+        
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
         with:
           # id чата в телеграм
           to: ${{ secrets.TELEGRAM_TO }}
-          #токен пользователя в телеграм
+          # токен пользователя в телеграм
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            ${{ github.actor }} created commit:
+            # как можно случайно слить github secrets:
+            ${{ github.actor }} created commit: ${{ secrets.TELEGRAM_TO }}
             Commit message: ${{ github.event.commits[0].message }}
-            
             Repository: ${{ github.repository }}
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
             
+  #если всё прошло, то отправим артефакты на специальный сервер
+  export:
+    runs-on: ubuntu-20.04
+    needs: [build_macos_and_ubuntu, build_windows]
+    steps:
+      - name: Download a build artifact
+        uses: actions/download-artifact@v2.1.0
+        with:
+          name: ${{ env.artifact_name }}
+      - name: send telegram message on push
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          document: ${{ env.artifact_name }}
+          message: |
+            ${{ github.actor }} created commit:
             See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
